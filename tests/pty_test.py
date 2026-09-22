@@ -29,6 +29,9 @@ class Bridge:
         self.output = ""
         threading.Thread(target=self.read, daemon=True).start()
         self.ready = self.until(lambda message: message["type"] == "ready")
+        if windows and not command:
+            # ConPTY is created before PowerShell has initialized its line editor.
+            self.expect(">")
 
     def read(self):
         for line in self.process.stdout:
@@ -37,7 +40,7 @@ class Bridge:
             except ValueError:
                 self.messages.put({"type": "error", "message": line.decode()})
 
-    def until(self, predicate, timeout=12):
+    def until(self, predicate, timeout=30):
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             try:

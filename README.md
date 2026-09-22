@@ -73,7 +73,7 @@ More detail on presets, appearance, executable paths and sessions is in [docs/us
 
 ## Status
 
-This is an early release (0.1.0). It has been tested live in Obsidian on macOS. Windows and Linux adapters are included, but hands-on checks in Obsidian on those platforms are still pending, automated platform checks run on GitHub.
+This is an early release (0.1.0). It has been tested live in Obsidian on macOS. Windows and Linux adapters are included, but hands-on checks in Obsidian on those platforms are still pending. Automated platform checks run on GitHub.
 
 Issues and pull requests are welcome. See the [development guide](docs/development.md), [architecture notes](docs/architecture.md), [release checklist](docs/releasing.md) and [changelog](CHANGELOG.md).
 
