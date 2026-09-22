@@ -55,6 +55,10 @@ try {
     await evaluate(`${view}.workspace.activePane.terminal.input('\\x03',true); null`);
     await new Promise((resolve) => setTimeout(resolve, 350));
     await evaluate(`${view}.workspace.activePane.terminal.input('\\x03',true); null`);
+    if (profile === 'claude') {
+      // Claude may consume Ctrl+C itself; its exit command must return to the same shell too.
+      await evaluate(`${view}.workspace.activePane.terminal.input('/exit\\r',true); null`);
+    }
     await waitFor(`JSON.stringify(${buffer(view)})`, (text) => /➜\s+\S/.test(text || ''));
     assert.equal(await evaluate(`JSON.stringify(${view}.workspace.activePane.running)`), true);
     console.log(`PASS: exiting ${profile} returns to the interactive shell in the same pane.`);

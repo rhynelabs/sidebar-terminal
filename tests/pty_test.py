@@ -87,7 +87,8 @@ class PtyTests(unittest.TestCase):
         else:
             self.bridge.write("printf 'HELLO_%s\\n' 'TERMINAL_ä'; pwd\r")
         self.bridge.until(lambda _: "HELLO_TERMINAL_ä" in self.bridge.output
-                          and self.directory.name in self.bridge.output)
+                          and os.path.normcase(os.path.realpath(self.directory.name))
+                          in os.path.normcase(self.bridge.output))
 
     @unittest.skipIf(sys.platform == "win32", "Unix terminal size query")
     def test_resize(self):
