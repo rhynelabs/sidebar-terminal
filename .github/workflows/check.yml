@@ -4,7 +4,9 @@ permissions:
   contents: read
 jobs:
   test:
+    timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
@@ -13,7 +15,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -24,7 +25,3 @@ jobs:
       - run: npm run format:check
       - run: npm run build
       - run: npm run check:release
-      - uses: actions/upload-artifact@v4
-        with:
-          name: sidebar-terminal-${{ matrix.os }}
-          path: dist/

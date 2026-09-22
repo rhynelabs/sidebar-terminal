@@ -32,8 +32,10 @@ node scripts/smoke-clipboard.mjs "Vault name"
 node scripts/smoke-profiles.mjs "Vault name"
 ```
 
-The first checks color queries, theme changes, a real shell, Unicode, splits, sizing, zoom, layout restoration and process cleanup. The clipboard check uses a temporary marker and restores the prior clipboard if it remains unchanged. The profile check starts installed Claude and Codex, interrupts them and verifies the configured Zsh prompt returns. These live scripts are for macOS development; the basic shell check also supports Linux. The CLI path can be supplied as the second argument.
+The first checks color queries, theme changes, a real shell, Unicode, splits, sizing, zoom, layout restoration and process cleanup. The clipboard check uses a temporary marker and restores the prior clipboard if it remains unchanged. The profile check starts installed Claude and Codex, exits them using interrupts or their exit command and verifies the configured Zsh prompt returns. These live scripts are for macOS development; the basic shell check also supports Linux. The CLI path can be supplied as the second argument.
 
 Automated CI covers macOS, Linux and Windows. A configured CI matrix is not evidence of a successful run; run it before a public release, then perform the platform checks in [releasing.md](releasing.md).
 
 See [architecture.md](architecture.md) for module responsibilities.
+
+The public repository uses free standard GitHub-hosted runners. Check jobs do not upload build artifacts or retain dependency caches. Release assets are built separately by the release workflow.
