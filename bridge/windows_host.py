@@ -4,6 +4,7 @@ import codecs
 import json
 import os
 import queue
+import shutil
 import subprocess
 import sys
 import threading
@@ -16,7 +17,7 @@ def emit(kind, **payload):
 
 def run(config):
     try:
-        from winpty import PtyProcess
+        from winpty import PTY
     except ImportError as error:
         raise RuntimeError(
             'Windows requires pywinpty. Install it for this Python: '
@@ -38,10 +39,13 @@ def run(config):
         args += ["/d", "/s", "/k", command]
     elif command:
         raise ValueError("Command profiles require PowerShell, cmd, bash or zsh")
-    child = PtyProcess.spawn(
-        args, cwd=config["cwd"], dimensions=(config["rows"], config["cols"]),
-        env=dict(os.environ, TERM="xterm-256color", COLORTERM="truecolor", SHELL=shell), backend=1,
-    )
+    executable = shutil.which(shell)
+    if not executable:
+        raise FileNotFoundError(f"Shell executable not found: {shell}")
+    environment = dict(os.environ, TERM="xterm-256color", COLORTERM="truecolor", SHELL=shell)
+    child = PTY(config["cols"], config["rows"], backend=1)
+    child.spawn(executable, cmdline=" " + subprocess.list2cmdline(args[1:]),
+                cwd=config["cwd"], env="\0".join(f"{k}={v}" for k, v in environment.items()) + "\0")
     messages = queue.Queue(maxsize=64)
 
     def read_input():
@@ -58,42 +62,32 @@ def run(config):
         finally:
             messages.put({"type": "close"})
 
-    def read_output():
-        try:
-            while True:
-                output = child.read(32768)
-                messages.put({"type": "output", "data": output})
-        except EOFError:
-            messages.put({"type": "exit"})
-        except Exception as error:
-            messages.put({"type": "error", "message": str(error)})
-
     threading.Thread(target=read_input, daemon=True).start()
-    threading.Thread(target=read_output, daemon=True).start()
     decoder = codecs.getincrementaldecoder("utf-8")()
     emit("ready", pid=child.pid)
     try:
         while True:
+            # Poll the native PTY directly. Blocking reader wrappers can stall
+            # PowerShell startup and add a loopback socket transport we do not need.
+            output = child.read(blocking=False)
+            if output:
+                emit("data", data=base64.b64encode(output.encode("utf-8")).decode("ascii"))
+            if not child.isalive():
+                emit("exit", code=child.get_exitstatus())
+                break
             try:
-                message = messages.get(timeout=0.2)
+                message = messages.get(timeout=0.01)
             except queue.Empty:
-                if not child.isalive():
-                    emit("exit", code=child.exitstatus)
-                    break
                 continue
             kind = message["type"]
             if kind == "input":
                 text = decoder.decode(base64.b64decode(message["data"], validate=True))
                 if text:
                     child.write(text)
-            elif kind == "output":
-                emit("data", data=base64.b64encode(message["data"].encode("utf-8")).decode("ascii"))
             elif kind == "resize":
-                child.setwinsize(max(1, min(1000, int(message["rows"]))),
-                                 max(2, min(1000, int(message["cols"]))))
-            elif kind in ("close", "exit"):
-                if kind == "exit":
-                    emit("exit", code=child.exitstatus)
+                child.set_size(max(2, min(1000, int(message["cols"]))),
+                               max(1, min(1000, int(message["rows"]))))
+            elif kind == "close":
                 break
             elif kind == "error":
                 raise RuntimeError(message["message"])
@@ -101,7 +95,7 @@ def run(config):
         if child.isalive():
             subprocess.run(["taskkill.exe", "/PID", str(child.pid), "/T", "/F"],
                            capture_output=True, timeout=3, check=False)
-        child.close(force=True)
+        child.cancel_io()
 
 
 if __name__ == "__main__":

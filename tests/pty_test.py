@@ -28,10 +28,13 @@ class Bridge:
         self.messages = queue.Queue()
         self.output = ""
         threading.Thread(target=self.read, daemon=True).start()
-        self.ready = self.until(lambda message: message["type"] == "ready")
-        if windows and not command:
-            # ConPTY is created before PowerShell has initialized its line editor.
-            self.expect(">")
+        try:
+            self.ready = self.until(lambda message: message["type"] == "ready")
+            if windows and not command:
+                self.expect(">")
+        except Exception:
+            self.close()
+            raise
 
     def read(self):
         for line in self.process.stdout:
