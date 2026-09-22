@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2 · 2026-09-22
+
+- Replace clipped scrollbar thumbs with transparent borders and background clipping.
+- Remove important CSS declarations while keeping pane hiding and drag selection behavior.
+- Sign release assets with GitHub build-provenance attestations.
+- Publish only the three standard Obsidian assets; Community installation is now available.
+- Document the exact filesystem and clipboard access used by the plugin.
+
 ## 0.1.1 · 2026-09-22
 
 - Handle a ConPTY output-handle race when a Windows shell exits.

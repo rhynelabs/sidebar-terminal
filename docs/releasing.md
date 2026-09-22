@@ -32,7 +32,7 @@ npm run check:release
 1. Use the publisher repository `rhynelabs/sidebar-terminal` and keep repository and author URLs current.
 2. Set the same semantic version in `manifest.json` and `package.json`, update `package-lock.json` and `versions.json`, and update `CHANGELOG.md`.
 3. Commit the reviewed source and tag it with the exact version, such as `0.1.0`, **without** a `v` prefix.
-4. Push the source and tag. The release workflow runs the platform checks and creates a **draft** GitHub release with the three required assets, a ready-to-install ZIP and formatted release notes.
+4. Push the source and tag. The release workflow runs the platform checks and creates a **draft** GitHub release with the three required assets, signed build-provenance attestations and formatted release notes.
 5. Inspect the draft and publish it after the checklist is complete.
 
 The Python transport and license notices are embedded into `main.js`; font data and license notices are embedded into `styles.css`. Users need an installed Python runtime, plus pywinpty on Windows. The plugin never downloads or installs those dependencies.

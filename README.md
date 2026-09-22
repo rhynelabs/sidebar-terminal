@@ -50,8 +50,8 @@ Open **[Sidebar Terminal in the Community directory](https://community.obsidian.
 <summary>Manual installation</summary>
 
 
-1. Download **[sidebar-terminal.zip](https://github.com/rhynelabs/sidebar-terminal/releases/latest/download/sidebar-terminal.zip)** and unzip it.
-2. Move the extracted `sidebar-terminal` folder into `<vault>/.obsidian/plugins/`.
+1. Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/rhynelabs/sidebar-terminal/releases/latest).
+2. Put the three files in `<vault>/.obsidian/plugins/sidebar-terminal/`.
 3. Reload Obsidian and enable **Sidebar Terminal** under **Settings → Community plugins**.
 
 </details>
@@ -64,6 +64,8 @@ Open a terminal with the ribbon icon or the **Open terminal workspace** command.
 - **Restored layouts.** Tabs, splits, names and starting directories come back after a restart. Each pane waits for you to press Start; nothing is replayed automatically.
 - **Working directories.** New splits open in the pane's configured starting directory, not wherever you last moved with `cd`.
 - **System access.** Shells, their configuration and the files your programs touch can live outside the vault. Programs run with your normal user permissions.
+- **Clipboard.** The plugin reads clipboard text only when you invoke Paste and writes selected text only when you invoke Copy. It does not monitor clipboard changes.
+- **Path checks.** The plugin checks whether configured directories and shell/Python executables exist. It does not index or read your documents; programs you start can access files with your user permissions.
 - **Privacy.** The plugin has no network service, telemetry or accounts of its own, and downloads nothing. External CLIs such as Claude Code or Codex have their own accounts, network access and billing.
 
 More detail on presets, appearance, executable paths and sessions is in [docs/usage.md](docs/usage.md).

@@ -12,8 +12,8 @@
 .ot-workspace *::after {
   box-sizing: border-box;
 }
-.ot-workspace [hidden] {
-  display: none !important;
+.workspace-leaf-content[data-type='sidebar-terminal-workspace'] .ot-workspace [hidden] {
+  display: none;
 }
 .ot-body {
   position: relative;
@@ -62,8 +62,9 @@
 .ot-separator:focus-visible {
   background: var(--interactive-accent);
 }
-.ot-resizing {
-  user-select: none !important;
+body.ot-resizing,
+body.ot-resizing * {
+  user-select: none;
 }
 .ot-pane {
   display: flex;
@@ -81,7 +82,10 @@
   pointer-events: none;
 }
 .ot-terminal .xterm-scrollable-element > .scrollbar.vertical > .slider {
-  clip-path: inset(0 4px round 4px);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
 }
 .ot-terminal {
   flex: 1;
