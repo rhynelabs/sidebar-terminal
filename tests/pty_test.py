@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import queue
+import re
 import signal
 import subprocess
 import sys
@@ -113,9 +114,11 @@ class PtyTests(unittest.TestCase):
 
     @unittest.skipIf(sys.platform == "win32", "Unix signals")
     def test_ctrl_c_interrupts_foreground_not_shell(self):
-        self.bridge.write("sleep 30\r")
-        time.sleep(0.2)
+        self.bridge.write("sh -c \"printf 'JOB_%s\\n' READY; exec sleep 90\"\r")
+        self.bridge.expect("JOB_READY")
+        offset = len(self.bridge.output)
         self.bridge.write("\x03")
+        self.bridge.until(lambda _: re.search(r"[$#] ", self.bridge.output[offset:]) is not None)
         self.bridge.write("printf 'STILL_%s\\n' ALIVE\r")
         self.bridge.expect("STILL_ALIVE")
 
