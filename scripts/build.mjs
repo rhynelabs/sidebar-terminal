@@ -1,6 +1,18 @@
 import { build, transform } from 'esbuild';
 import { mkdir, rm, readFile, writeFile, copyFile } from 'node:fs/promises';
 
+const { name, version } = JSON.parse(await readFile('manifest.json', 'utf8'));
+const header = `/*!
+ * ${name} ${version}
+ * Terminal tabs and splits for Obsidian.
+ *
+ * Copyright (c) 2026 Rhynelabs · MIT License
+ * https://github.com/rhynelabs/sidebar-terminal
+ *
+ * Generated release bundle. Source is available in the repository.
+ * Full license and third-party notices follow at the end of this file.
+ */`;
+
 await rm('dist', { recursive: true, force: true });
 await mkdir('dist', { recursive: true });
 await build({
@@ -12,7 +24,8 @@ await build({
   target: 'es2022',
   external: ['obsidian', 'electron'],
   loader: { '.py': 'text' },
-  minify: false,
+  minify: true,
+  banner: { js: header },
   legalComments: 'eof',
 });
 const css = [
@@ -35,6 +48,7 @@ await writeFile(
     await transform(css.join('\n'), {
       loader: 'css',
       minify: true,
+      banner: header,
     })
   ).code,
 );

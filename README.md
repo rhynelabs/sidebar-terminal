@@ -46,8 +46,8 @@ py -3 -m pip install "pywinpty>=3.0,<4"
 
 Sidebar Terminal is not listed in the Community plugins directory yet. Install it manually:
 
-1. Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/rhynelabs/sidebar-terminal/releases/latest).
-2. Create `<vault>/.obsidian/plugins/sidebar-terminal/` and put the three files inside.
+1. Download **[sidebar-terminal.zip](https://github.com/rhynelabs/sidebar-terminal/releases/latest/download/sidebar-terminal.zip)** and unzip it.
+2. Move the extracted `sidebar-terminal` folder into `<vault>/.obsidian/plugins/`.
 3. Reload Obsidian and enable **Sidebar Terminal** under **Settings → Community plugins**.
 
 Open a terminal with the ribbon icon or the **Open terminal workspace** command. To open one next to a note, use **Open terminal in editor**.
@@ -64,7 +64,7 @@ More detail on presets, appearance, executable paths and sessions is in [docs/us
 
 ## Status
 
-This is an early release (0.1.0). It has been tested live in Obsidian on macOS. Windows and Linux adapters are included, but hands-on checks in Obsidian on those platforms are still pending. Automated platform checks run on GitHub.
+This is an early release. It has been tested live in Obsidian on macOS. Windows and Linux adapters are included, but hands-on checks in Obsidian on those platforms are still pending. Automated platform checks run on GitHub.
 
 Issues and pull requests are welcome. See the [development guide](docs/development.md) and [changelog](CHANGELOG.md).
 

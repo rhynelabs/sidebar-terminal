@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 · 2026-09-22
+
+- Handle a ConPTY output-handle race when a Windows shell exits.
+- Minified release bundles with readable version, source and license headers.
+- One-download ZIP installation alongside the standard Obsidian assets.
+- Clearer release pages with a workspace screenshot and installation steps.
+
 ## 0.1.0 · 2026-09-22
 
 - Native sidebar and editor tabs with independent terminal sessions.

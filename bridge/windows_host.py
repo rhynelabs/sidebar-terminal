@@ -18,7 +18,7 @@ def emit(kind, **payload):
 
 def run(config):
     try:
-        from winpty import PTY
+        from winpty import PTY, WinptyError
     except ImportError as error:
         raise RuntimeError(
             'Windows requires pywinpty. Install it for this Python: '
@@ -70,7 +70,15 @@ def run(config):
         while True:
             # Poll the native PTY directly. Blocking reader wrappers can stall
             # PowerShell startup and add a loopback socket transport we do not need.
-            output = child.read(blocking=False)
+            try:
+                output = child.read(blocking=False)
+            except WinptyError:
+                # ConPTY can close its output handle between polls on shell exit.
+                # Preserve real read failures while the shell is still running.
+                if child.isalive():
+                    raise
+                emit("exit", code=child.get_exitstatus())
+                break
             if output:
                 emit("data", data=base64.b64encode(output.encode("utf-8")).decode("ascii"))
             if not child.isalive():
@@ -100,7 +108,6 @@ def run(config):
         while child.isalive() and time.monotonic() < deadline:
             time.sleep(0.01)
         alive = child.isalive()
-        child.cancel_io()
         # Close ConPTY and its console host before reporting bridge completion.
         del child
         if alive:

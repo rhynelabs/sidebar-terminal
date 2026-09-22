@@ -155,9 +155,14 @@ class PtyTests(unittest.TestCase):
         self.assertIsNone(self.bridge.process.poll())
 
     def test_exit_status(self):
-        self.bridge.write("exit 7\r")
-        event = self.bridge.until(lambda message: message["type"] == "exit")
-        self.assertEqual(event["code"], 7)
+        for attempt in range(5 if sys.platform == "win32" else 1):
+            with self.subTest(attempt=attempt):
+                if attempt:
+                    self.bridge.close()
+                    self.bridge = Bridge(self.directory.name)
+                self.bridge.write("exit 7\r")
+                event = self.bridge.until(lambda message: message["type"] == "exit")
+                self.assertEqual(event["code"], 7)
 
 
 if __name__ == "__main__":

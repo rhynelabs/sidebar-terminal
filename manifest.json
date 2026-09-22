@@ -1,7 +1,7 @@
 {
   "id": "sidebar-terminal",
   "name": "Sidebar Terminal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minAppVersion": "1.13.1",
   "description": "Run your shell and command-line tools in native tabs with resizable split panes.",
   "author": "Rhynelabs",
