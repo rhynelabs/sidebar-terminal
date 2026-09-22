@@ -44,7 +44,7 @@ py -3 -m pip install "pywinpty>=3.0,<4"
 
 ## Install
 
-Sidebar Terminal is not listed in the Community plugins directory yet. Install it manually:
+Sidebar Terminal has been submitted to the Community plugins directory and is awaiting review. Until it is listed, install it manually:
 
 1. Download **[sidebar-terminal.zip](https://github.com/rhynelabs/sidebar-terminal/releases/latest/download/sidebar-terminal.zip)** and unzip it.
 2. Move the extracted `sidebar-terminal` folder into `<vault>/.obsidian/plugins/`.
