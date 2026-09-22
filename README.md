@@ -44,11 +44,17 @@ py -3 -m pip install "pywinpty>=3.0,<4"
 
 ## Install
 
-The [Community listing](https://community.obsidian.md/plugins/sidebar-terminal) is live; automated review is still pending. Until installation is enabled there, use the ZIP:
+Open **[Sidebar Terminal in the Community directory](https://community.obsidian.md/plugins/sidebar-terminal)** and choose **Add to Obsidian**, then install and enable the plugin. You can also search for **Sidebar Terminal** under **Settings → Community plugins → Browse**.
+
+<details>
+<summary>Manual installation</summary>
+
 
 1. Download **[sidebar-terminal.zip](https://github.com/rhynelabs/sidebar-terminal/releases/latest/download/sidebar-terminal.zip)** and unzip it.
 2. Move the extracted `sidebar-terminal` folder into `<vault>/.obsidian/plugins/`.
 3. Reload Obsidian and enable **Sidebar Terminal** under **Settings → Community plugins**.
+
+</details>
 
 Open a terminal with the ribbon icon or the **Open terminal workspace** command. To open one next to a note, use **Open terminal in editor**.
 
