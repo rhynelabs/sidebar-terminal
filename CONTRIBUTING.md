@@ -19,6 +19,6 @@ npm run build
 npm run check:release
 ```
 
-Describe the behavior being changed and how you verified it. For terminal or layout changes, test in Obsidian and name the platforms you checked. Do not remove capability disclosures or hide shell, filesystem or clipboard access to change a review score.
+Describe the behavior being changed and how you verified it. For terminal or layout changes, test in Obsidian and name the platforms you checked. Document any changes to shell, filesystem or clipboard access in the README.
 
 Contributions are licensed under the project's [MIT License](LICENSE). Preserve dependency license notices.
