@@ -4,7 +4,7 @@ Publisher and copyright holder: **Rhynelabs**. Plugin ID: **sidebar-terminal**. 
 
 ## Current status
 
-The source is published at [rhynelabs/sidebar-terminal](https://github.com/rhynelabs/sidebar-terminal). Submitted to the Obsidian Community directory on 22 September 2026 under Rhynelabs; review is pending. See GitHub Releases for available builds.
+The source is published at [rhynelabs/sidebar-terminal](https://github.com/rhynelabs/sidebar-terminal). The [Community listing](https://community.obsidian.md/plugins/sidebar-terminal) was published on 22 September 2026 under Rhynelabs. Automated review is pending; direct installation is not enabled yet. See GitHub Releases for available builds.
 
 macOS has been exercised live. Before the first stable release, complete the Linux and Windows checks below and record their results. A successful local build does not guarantee acceptance by Obsidian's review.
 
