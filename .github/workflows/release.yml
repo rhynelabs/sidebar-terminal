@@ -1,0 +1,30 @@
+name: Draft release
+on:
+  push:
+    tags: ['*.*.*']
+permissions:
+  contents: read
+jobs:
+  verify:
+    uses: ./.github/workflows/check.yml
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run check:release
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+      - name: Create draft with Obsidian assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" dist/main.js dist/manifest.json dist/styles.css --draft --verify-tag --title "Sidebar Terminal $RELEASE_TAG" --notes-file CHANGELOG.md

@@ -1,0 +1,116 @@
+.workspace-leaf-content[data-type='sidebar-terminal-workspace'] .view-content.ot-workspace {
+  display: flex;
+  padding: 0;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  background: var(--background-primary);
+  color: var(--text-normal);
+}
+.ot-workspace *,
+.ot-workspace *::before,
+.ot-workspace *::after {
+  box-sizing: border-box;
+}
+.ot-workspace [hidden] {
+  display: none !important;
+}
+.ot-body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.ot-body > * {
+  flex: 1;
+}
+.ot-split {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.ot-split-down {
+  flex-direction: column;
+}
+.ot-branch {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.ot-branch > * {
+  flex: 1;
+}
+.ot-separator {
+  flex: 0 0 4px;
+  background: var(--background-modifier-border);
+  position: relative;
+  touch-action: none;
+}
+.ot-split-right > .ot-separator {
+  cursor: col-resize;
+}
+.ot-split-down > .ot-separator {
+  cursor: row-resize;
+}
+.ot-separator:hover,
+.ot-separator:focus-visible {
+  background: var(--interactive-accent);
+}
+.ot-resizing {
+  user-select: none !important;
+}
+.ot-pane {
+  display: flex;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.ot-body.has-splits .ot-pane.is-active {
+  box-shadow: inset 0 0 0 1px var(--interactive-accent);
+}
+.ot-terminal {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 12px 14px;
+}
+.ot-terminal canvas {
+  display: block;
+  max-width: none;
+}
+.ot-terminal textarea {
+  line-height: normal;
+  letter-spacing: normal;
+}
+.ot-pane-status {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--background-primary);
+  pointer-events: none;
+}
+.ot-pane-status:empty {
+  display: none;
+}
+.ot-pane > button.ot-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 7px;
+  z-index: 1;
+}
+.ot-start {
+  align-self: center;
+  flex: none;
+  margin: auto;
+}

@@ -1,0 +1,55 @@
+/* Presets editor in the plugin settings tab. Uses theme variables only. */
+.ot-presets {
+  container-type: inline-size;
+}
+
+.setting-item.ot-preset {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--size-4-3);
+}
+
+.ot-preset-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--size-4-2) var(--size-4-3);
+  min-width: 0;
+}
+
+.ot-preset-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-2);
+  min-width: 0;
+}
+
+.ot-preset-label {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-medium);
+}
+
+.ot-preset-field input[type='text'] {
+  width: 100%;
+  min-width: 0;
+}
+
+.ot-preset-field input.ot-preset-command {
+  font-family: var(--font-monospace);
+}
+
+.ot-preset-remove.clickable-icon {
+  flex: none;
+}
+
+.ot-preset-remove.clickable-icon:hover,
+.ot-preset-remove.clickable-icon:focus-visible {
+  color: var(--text-error);
+}
+
+@container (max-width: 440px) {
+  .ot-preset-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
