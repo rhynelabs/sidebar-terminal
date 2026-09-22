@@ -17,7 +17,7 @@ export function terminalTheme(element: HTMLElement): ITheme {
     context.fillStyle = resolved;
     context.fillRect(0, 0, 1, 1);
     const rgb = context.getImageData(0, 0, 1, 1).data;
-    if (name === '--text-selection') return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${rgb[3]! / 255})`;
+    if (rgb[3]! < 255) return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${rgb[3]! / 255})`;
     return `#${[...rgb]
       .slice(0, 3)
       .map((value) => value.toString(16).padStart(2, '0'))
@@ -29,6 +29,9 @@ export function terminalTheme(element: HTMLElement): ITheme {
     foreground: color('--text-normal', dark ? '#dadada' : '#222222'),
     cursor: color('--text-normal', dark ? '#dadada' : '#222222'),
     selectionBackground: color('--text-selection', dark ? '#48405e' : '#ded4f3'),
+    scrollbarSliderBackground: color('--scrollbar-thumb-bg', '#88888840'),
+    scrollbarSliderHoverBackground: color('--scrollbar-active-thumb-bg', '#88888870'),
+    scrollbarSliderActiveBackground: color('--scrollbar-active-thumb-bg', '#88888890'),
     black: '#1d1f21',
     red: '#cc6666',
     green: '#b5bd68',

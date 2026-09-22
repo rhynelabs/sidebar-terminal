@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 — Initial development release
+## 0.1.0 · 2026-09-22
 
 - Native sidebar and editor tabs with independent terminal sessions.
 - Nested resizable splits, pane expansion and terminal keyboard shortcuts.
@@ -12,4 +12,4 @@
 - Unix PTY and Windows ConPTY transports, bundled in the standard three Obsidian release assets.
 - MIT license and authorship by Rhynelabs.
 
-Status: local macOS verification complete; public release and Community directory review pending.
+Verification: automated checks pass on macOS, Linux and Windows; live Obsidian checks have been performed on macOS. Native Windows/Linux UI checks and Community directory review remain pending.

@@ -1,28 +1,25 @@
-<h1 align="center">Sidebar Terminal</h1>
+# Sidebar Terminal
 
-<p align="center"><sub>for <a href="https://obsidian.md">Obsidian</a></sub></p>
+### AI agents, right inside Obsidian.
 
-<p align="center">
-  A terminal beside your notes, with native tabs, resizable splits and your own shell.
-</p>
+Run **Claude Code, Codex and other terminal agents** beside your notes. Keep your research, project plans and agent sessions in one workspace.
 
-<p align="center">
-  <a href="#install">Install</a> ·
-  <a href="docs/usage.md">Usage</a> ·
-  <a href="docs/usage.md#keyboard-shortcuts">Shortcuts</a> ·
-  <a href="docs/development.md">Development</a>
-</p>
+![Claude Code above Codex, beside an Obsidian note](docs/images/workspace.png)
 
-<br>
+[Install](#install) · [Usage](docs/usage.md) · [Shortcuts](docs/usage.md#keyboard-shortcuts) · [Development](docs/development.md)
 
-Sidebar Terminal opens real shell sessions inside Obsidian's own tabs, in the sidebar or next to a note. Each pane has its own terminal buffer and process. Run your usual command-line tools there, including Claude Code, Codex or anything else you have installed.
+## Work with agents beside your notes
 
-## Features
+Ask an agent to work with your notes while you keep the outline open. Give each project its own terminal tab, or split a tab to run several tools side by side. Presets launch your installed CLIs; when a tool exits, the shell stays open for the next command.
+
+Need a script, a Git command or an ordinary shell? Those work here too.
+
+## Built for Obsidian
 
 - **Native tabs and splits.** Open several terminals as Obsidian tabs and split them right or down. Switching tabs keeps their jobs running.
 - **Your shell.** Starts your configured interactive shell with its prompt, aliases and startup files.
 - **Presets.** Launch an installed CLI in a new tab. When it exits, you are back in the same shell.
-- **Familiar keys.** `Ctrl C` copies when text is selected and interrupts the program otherwise. Terminal shortcuts and an optional tmux-style prefix are listed in the [shortcut reference](docs/usage.md#keyboard-shortcuts).
+- **Split with a shortcut.** `⌘ D` splits right; `⌘ Shift D` splits down. Resize with a drag, or use the optional tmux-style prefix. [All shortcuts →](docs/usage.md#keyboard-shortcuts)
 - **Theme-aware.** Background, text and selection follow your Obsidian theme. Explicit RGB colors from TUI programs are shown unchanged.
 
 Rendering uses xterm.js with bundled JetBrains Mono.
@@ -47,17 +44,11 @@ py -3 -m pip install "pywinpty>=3.0,<4"
 
 ## Install
 
-Sidebar Terminal is not listed in the Community plugins directory yet, and release builds have not been published. For now, install from source. This needs Node.js 22 or later.
+Sidebar Terminal is not listed in the Community plugins directory yet. Install it manually:
 
-```sh
-git clone https://github.com/rhynelabs/sidebar-terminal.git
-cd sidebar-terminal
-npm ci
-npm run build
-npm run install:plugin -- "/path/to/vault"
-```
-
-The installer copies `main.js`, `manifest.json` and `styles.css` to `<vault>/.obsidian/plugins/sidebar-terminal/` and keeps existing settings. Then enable **Sidebar Terminal** under **Settings → Community plugins**.
+1. Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/rhynelabs/sidebar-terminal/releases/latest).
+2. Create `<vault>/.obsidian/plugins/sidebar-terminal/` and put the three files inside.
+3. Reload Obsidian and enable **Sidebar Terminal** under **Settings → Community plugins**.
 
 Open a terminal with the ribbon icon or the **Open terminal workspace** command. To open one next to a note, use **Open terminal in editor**.
 
@@ -75,7 +66,7 @@ More detail on presets, appearance, executable paths and sessions is in [docs/us
 
 This is an early release (0.1.0). It has been tested live in Obsidian on macOS. Windows and Linux adapters are included, but hands-on checks in Obsidian on those platforms are still pending. Automated platform checks run on GitHub.
 
-Issues and pull requests are welcome. See the [development guide](docs/development.md), [architecture notes](docs/architecture.md), [release checklist](docs/releasing.md) and [changelog](CHANGELOG.md).
+Issues and pull requests are welcome. See the [development guide](docs/development.md) and [changelog](CHANGELOG.md).
 
 ## License
 

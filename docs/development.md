@@ -34,8 +34,25 @@ node scripts/smoke-profiles.mjs "Vault name"
 
 The first checks color queries, theme changes, a real shell, Unicode, splits, sizing, zoom, layout restoration and process cleanup. The clipboard check uses a temporary marker and restores the prior clipboard if it remains unchanged. The profile check starts installed Claude and Codex, exits them using interrupts or their exit command and verifies the configured Zsh prompt returns. These live scripts are for macOS development; the basic shell check also supports Linux. The CLI path can be supplied as the second argument.
 
-Automated CI covers macOS, Linux and Windows. A configured CI matrix is not evidence of a successful run; run it before a public release, then perform the platform checks in [releasing.md](releasing.md).
+Automated CI covers macOS, Linux and Windows. CI runs the automated checks on each platform. Hands-on Obsidian checks are tracked in [releasing.md](releasing.md).
 
-See [architecture.md](architecture.md) for module responsibilities.
+## Source map
+
+Each native Obsidian tab owns a split tree. Each pane owns its terminal renderer and its own process session.
+
+| Location                     | Purpose                                                   |
+| ---------------------------- | --------------------------------------------------------- |
+| `src/main.ts`, `src/view.ts` | Obsidian commands, views and lifecycle                    |
+| `src/layout/`                | Saved layout validation, splits and dividers              |
+| `src/terminal/`              | xterm.js rendering, input, settings and process transport |
+| `src/settings/`, `src/ui/`   | Settings, presets, menus and dialogs                      |
+| `bridge/`                    | Unix PTY, Windows ConPTY and process cleanup              |
+| `scripts/`, `tests/`         | Builds, installation and checks                           |
+
+Closing a pane disposes its renderer and bridge; closing a tab disposes every pane. Restored layouts contain preset IDs and starting directories, never executable commands or terminal output. Restored panes wait for Start.
+
+The three release files contain the Python bridge sources, fonts and dependency notices. Python itself must already be installed. Authored source files are limited to 300 lines; the build checks this alongside TypeScript and Obsidian lint rules.
+
+For versioning and publishing, see [releasing.md](releasing.md).
 
 The public repository uses free standard GitHub-hosted runners. Check jobs do not upload build artifacts or retain dependency caches. Release assets are built separately by the release workflow.
