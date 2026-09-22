@@ -85,7 +85,16 @@ class PtyTests(unittest.TestCase):
 
     def tearDown(self):
         self.bridge.close()
-        self.directory.cleanup()
+        # Windows may release console-host directory handles just after process exit.
+        deadline = time.monotonic() + 2
+        while True:
+            try:
+                self.directory.cleanup()
+                break
+            except PermissionError:
+                if sys.platform != "win32" or time.monotonic() >= deadline:
+                    raise
+                time.sleep(0.02)
 
     def test_interactive_unicode_and_directory(self):
         if sys.platform == "win32":

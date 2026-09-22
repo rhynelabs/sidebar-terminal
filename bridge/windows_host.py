@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import threading
+import time
 
 
 def emit(kind, **payload):
@@ -95,7 +96,15 @@ def run(config):
         if child.isalive():
             subprocess.run(["taskkill.exe", "/PID", str(child.pid), "/T", "/F"],
                            capture_output=True, timeout=3, check=False)
+        deadline = time.monotonic() + 2
+        while child.isalive() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        alive = child.isalive()
         child.cancel_io()
+        # Close ConPTY and its console host before reporting bridge completion.
+        del child
+        if alive:
+            raise RuntimeError("The terminal process did not exit after termination")
 
 
 if __name__ == "__main__":
