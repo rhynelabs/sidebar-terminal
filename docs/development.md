@@ -20,7 +20,7 @@ Enable Obsidian's CLI in Settings → General → Advanced, then run:
 npm run dev -- "/path/to/vault"
 ```
 
-The watcher checks types, lint and source line limits, builds, installs and reloads this plugin. It does not restart the vault. Each successful reload ends this plugin's terminal processes; saved layouts return with Start buttons. An optional second argument selects the Obsidian CLI executable.
+The watcher checks types, lint and source line limits, builds, installs and reloads this plugin. It does not restart the vault. Each successful reload ends this plugin's terminal processes; saved layouts return with fresh shells without replaying preset commands. An optional second argument selects the Obsidian CLI executable.
 
 ## Live checks
 

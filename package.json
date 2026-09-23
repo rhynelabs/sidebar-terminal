@@ -1,6 +1,6 @@
 {
   "name": "sidebar-terminal",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "Independent terminals, tabs and split panes for Obsidian desktop.",
   "license": "MIT",

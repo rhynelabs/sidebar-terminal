@@ -131,13 +131,13 @@ export class TerminalPane {
     return this.mounting;
   }
 
-  start(): void {
+  start(options: { runProfile?: boolean; focus?: boolean } = {}): void {
     if (this.running || this.disposed) return;
     this.running = true;
     this.startButton.hidden = true;
     this.status.textContent = 'Starting';
     void this.ensureMounted()
-      .then(() => this.startSession())
+      .then(() => this.startSession(options))
       .catch((error) => {
         this.running = false;
         this.startButton.hidden = false;
@@ -145,7 +145,7 @@ export class TerminalPane {
       });
   }
 
-  private startSession(): void {
+  private startSession(options: { runProfile?: boolean; focus?: boolean }): void {
     if (this.disposed) return;
     this.fitNow();
     this.session?.dispose();
@@ -173,9 +173,12 @@ export class TerminalPane {
     });
     this.session = session;
     const settings = this.host.settings();
-    const command = settings.profiles.find((profile) => profile.id === this.spec.profile)?.command ?? '';
+    const command =
+      options.runProfile === false
+        ? ''
+        : (settings.profiles.find((profile) => profile.id === this.spec.profile)?.command ?? '');
     session.start(settings, this.spec.cwd, this.terminal.cols, this.terminal.rows, command);
-    this.focus();
+    if (options.focus !== false) this.focus();
   }
 
   rename(title: string): void {

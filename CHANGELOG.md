@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 · 2026-09-23
+
+- Automatically start fresh shells in restored tabs and split panes without replaying preset commands or moving keyboard focus.
+
 ## 0.1.2 · 2026-09-22
 
 - Replace clipped scrollbar thumbs with transparent borders and background clipping.

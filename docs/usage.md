@@ -69,7 +69,7 @@ TUI programs get continuous box drawing, terminal color query responses and brac
 - Switching tabs leaves their processes running.
 - Closing a pane ends its shell and the child processes it owns. Closing a tab does this for every pane in it.
 - Restarting Obsidian, or disabling or reloading the plugin, ends live sessions.
-- Saved layouts restore tabs, splits, names and starting directories. Restored panes wait for you to press Start; commands are not replayed.
+- Saved layouts restore tabs, splits, names and starting directories. Restored panes automatically start fresh shells; previous commands and preset commands are not replayed.
 - A new split starts in the pane's configured starting directory, not in a directory you later changed to with `cd`.
 
 Sidebar Terminal is a multiplexer interface, not a persistent tmux server. Run tmux inside a pane if you need sessions that survive closing Obsidian.

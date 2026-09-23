@@ -76,6 +76,10 @@ export class TerminalWorkspace {
     this.state = restoreState(value);
     this.zoomed = false;
     this.host.render();
+    // Restore usable shells, never replay a preset command or steal focus from another tab.
+    if (this.state.root)
+      for (const spec of panes(this.state.root))
+        this.ensurePane(spec).start({ runProfile: false, focus: false });
   }
 
   newTab(profile = 'shell', cwd = this.host.cwd): void {

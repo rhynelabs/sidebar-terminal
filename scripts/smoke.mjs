@@ -43,20 +43,45 @@ try {
   assert.ok(sizes.every((p) => p.font.includes('Sidebar Terminal Mono')));
   await evaluate(`${workspace}.toggleZoom(); null`);
   assert.equal(await evaluate(`JSON.stringify(${workspace}.zoomed)`), true);
+  await evaluate(`(()=>{
+    const plugin=app.plugins.plugins['sidebar-terminal'];
+    ${context}.profileId='restore-test-'+crypto.randomUUID();
+    plugin.settings.profiles.push({id:${context}.profileId,name:'Restore test',command:"printf 'UNEXPECTED_%s\\n' REPLAY"});
+    ${pane}.spec.profile=${context}.profileId;
+    ${context}.focusProbe=document.createElement('input');
+    document.body.append(${context}.focusProbe); ${context}.focusProbe.focus();
+  })(); null`);
   await evaluate(
-    `${workspace}.toggleZoom(); ${context}.saved=JSON.parse(JSON.stringify(${context}.view.getState())); ${context}.pids=[...${workspace}.terminals.values()].map(p=>p.session?.process?.pid).filter(Boolean); ${context}.view.setState(${context}.saved,{history:false}); null`,
+    `${workspace}.toggleZoom(); ${context}.focusProbe.focus(); ${context}.saved=JSON.parse(JSON.stringify(${context}.view.getState())); ${context}.pids=[...${workspace}.terminals.values()].map(p=>p.session?.process?.pid).filter(Boolean); ${context}.view.setState(${context}.saved,{history:false}); null`,
   );
-  await waitFor(`JSON.stringify([...${workspace}.terminals.values()].every(p=>!p.running))`, Boolean);
+  await waitFor(
+    `JSON.stringify([...${workspace}.terminals.values()].every(p=>p.running && p.session?.process?.pid))`,
+    Boolean,
+  );
   assert.equal(await evaluate(`JSON.stringify(${workspace}.terminals.size)`), 3);
   await waitFor(
     `JSON.stringify(${context}.pids.every(pid=>{try{require("process").kill(pid,0);return false}catch{return true}}))`,
     Boolean,
   );
+  await evaluate(
+    `${workspace}.terminals.forEach((p,id)=>p.terminal.input("printf 'RESTORED_%s\\n' '"+id+"'\\r",true)); null`,
+  );
+  await waitFor(
+    `JSON.stringify([...${workspace}.terminals].every(([id,p])=>Array.from({length:p.terminal.buffer.active.length},(_,i)=>p.terminal.buffer.active.getLine(i)?.translateToString()).join("\\n").includes('RESTORED_'+id)))`,
+    Boolean,
+  );
+  assert.equal(await evaluate(`JSON.stringify(document.activeElement===${context}.focusProbe)`), true);
+  assert.equal(
+    await evaluate(
+      `JSON.stringify([...${workspace}.terminals.values()].some(p=>Array.from({length:p.terminal.buffer.active.length},(_,i)=>p.terminal.buffer.active.getLine(i)?.translateToString()).join('').includes('UNEXPECTED_REPLAY')))`,
+    ),
+    false,
+  );
   console.log(
-    'PASS: Live color queries and theme updates, real shell, Unicode, splits, sizing, font, zoom, layout and cleanup.',
+    'PASS: Live color queries and theme updates, real shell, Unicode, splits, sizing, font, zoom, restored shells, no preset replay, focus and cleanup.',
   );
 } finally {
   await evaluate(
-    `${context}?.probe?.terminal.dispose(); ${context}?.probe?.el.remove(); ${context}?.leaf.detach(); delete ${context}; null`,
+    `app.plugins.plugins['sidebar-terminal'].settings.profiles=app.plugins.plugins['sidebar-terminal'].settings.profiles.filter(p=>p.id!==${context}?.profileId); ${context}?.focusProbe?.remove(); ${context}?.probe?.terminal.dispose(); ${context}?.probe?.el.remove(); ${context}?.leaf.detach(); delete ${context}; null`,
   );
 }

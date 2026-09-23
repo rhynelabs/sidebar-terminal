@@ -61,7 +61,7 @@ Open a terminal with the ribbon icon or the **Open terminal workspace** command.
 ## Good to know
 
 - **Sessions.** Closing a pane or tab ends its shell and the processes it owns. Quitting Obsidian or reloading the plugin ends all sessions.
-- **Restored layouts.** Tabs, splits, names and starting directories come back after a restart. Each pane waits for you to press Start; nothing is replayed automatically.
+- **Restored layouts.** Tabs, splits, names and starting directories come back after a restart. Each pane starts a fresh shell automatically; previous commands and preset commands are not replayed.
 - **Working directories.** New splits open in the pane's configured starting directory, not wherever you last moved with `cd`.
 - **System access.** Shells, their configuration and the files your programs touch can live outside the vault. Programs run with your normal user permissions.
 - **Clipboard.** The plugin reads clipboard text only when you invoke Paste and writes selected text only when you invoke Copy. It does not monitor clipboard changes.
