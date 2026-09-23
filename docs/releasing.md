@@ -4,6 +4,8 @@ Publisher and copyright holder: **Rhynelabs**. Plugin ID: **sidebar-terminal**. 
 
 ## Current status
 
+Version **0.1.3** was published on GitHub on 23 September 2026 with automatic shell startup for restored layouts. The branch checks and release workflow passed on macOS, Ubuntu and Windows. All three release assets match the local build and have verified GitHub artifact attestations. The Community directory still lists 0.1.2 while the new release awaits synchronization and review.
+
 The source is published at [rhynelabs/sidebar-terminal](https://github.com/rhynelabs/sidebar-terminal). The [Community listing](https://community.obsidian.md/plugins/sidebar-terminal) was published on 22 September 2026 under Rhynelabs. Direct installation is enabled. Version 0.1.2 removes the CSS lint findings and optional ZIP, and adds verified GitHub artifact attestations. Its automated review completed on 22 September 2026 with **Health: Excellent** and **Review: Satisfactory**. All five checks passed: attestations for JavaScript and CSS, network and dependency checks, and byte-for-byte JavaScript build reproduction. The only remaining findings are two capability warnings for shell execution and filesystem access, plus a recommendation for user-initiated clipboard access. These capabilities remain disclosed; both ratings are not Excellent. Malware and obfuscation scans were unavailable and are not claimed as passed. The release workflow and the latest branch checks pass on all three platforms. See GitHub Releases for available builds.
 
 macOS has been exercised live. Before the first stable release, complete the Linux and Windows checks below and record their results. A successful local build does not guarantee acceptance by Obsidian's review.
