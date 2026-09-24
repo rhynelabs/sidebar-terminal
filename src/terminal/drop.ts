@@ -42,7 +42,8 @@ export function acceptsDrag(dragged: unknown, types: readonly string[]): boolean
 
 /** Quote for the login shell (POSIX single quotes) or PowerShell, where '' escapes a quote. */
 export function quoteArgument(value: string, windows = process.platform === 'win32'): string {
-  if (/^[\w./:@%+=,-]+$/.test(value) && !value.startsWith('-')) return value;
+  const plain = windows ? /^[\w.\\/:@%+=,-]+$/ : /^[\w./:@%+=,-]+$/;
+  if (plain.test(value) && !value.startsWith('-')) return value;
   return windows ? `'${value.replaceAll("'", "''")}'` : `'${value.replaceAll("'", "'\\''")}'`;
 }
 
