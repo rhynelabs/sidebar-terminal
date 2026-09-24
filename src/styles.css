@@ -94,6 +94,10 @@ body.ot-resizing * {
   overflow: hidden;
   padding: 12px 14px;
 }
+.ot-terminal-surface {
+  width: 100%;
+  height: 100%;
+}
 .ot-terminal canvas {
   display: block;
   max-width: none;

@@ -12,6 +12,7 @@ import { TerminalSession } from './session';
 import { TerminalKeyboard, type TerminalActions } from './keyboard';
 import { terminalOptions, terminalTheme } from './theme';
 import { installDropTarget } from './dropzone';
+import { loadFonts, remeasure, watchFonts } from './fonts';
 import { element } from '../ui/elements';
 
 export interface PaneHost {
@@ -41,6 +42,7 @@ export class TerminalPane {
   attached = false;
   private host: PaneHost;
   private body: HTMLElement;
+  private surface: HTMLElement;
   private status: HTMLElement;
   private fitAddon = new FitAddon();
   private serializer = new SerializeAddon();
@@ -53,6 +55,7 @@ export class TerminalPane {
   private startedAt = 0;
   private quickExits = 0;
   private mounting: Promise<void> | null = null;
+  private unwatchFonts: (() => void) | null = null;
 
   constructor(doc: Document, spec: PaneSpec, host: PaneHost) {
     this.spec = spec;
@@ -66,7 +69,10 @@ export class TerminalPane {
       this.host.activate();
       this.host.menu(event);
     });
+    // The renderer lives in an unpadded surface so the fit addon sees the exact free height.
     this.body = element(doc, 'div', 'ot-terminal');
+    this.surface = element(doc, 'div', 'ot-terminal-surface');
+    this.body.append(this.surface);
     this.element.append(this.body, this.status);
     this.element.addEventListener('pointerdown', () => this.host.activate());
     this.element.addEventListener('focusin', () => this.host.activate());
@@ -158,15 +164,14 @@ export class TerminalPane {
   private ensureMounted(): Promise<void> {
     if (!this.mounting)
       this.mounting = (async () => {
-        await Promise.all(
-          ['400', '700', 'italic 400', 'italic 700'].map((style) =>
-            this.body.ownerDocument.fonts.load(
-              `${style} ${this.host.settings().fontSize}px ${this.host.settings().fontFamily}`,
-            ),
-          ),
-        );
+        const doc = this.body.ownerDocument;
+        await loadFonts(doc, this.host.settings());
         if (this.disposed) return;
-        this.terminal.open(this.body);
+        this.terminal.open(this.surface);
+        this.unwatchFonts = watchFonts(doc, () => {
+          remeasure(this.terminal, this.host.settings().fontFamily);
+          this.fit();
+        });
         try {
           const webgl = new WebglAddon();
           webgl.onContextLoss(() => webgl.dispose());
@@ -285,6 +290,7 @@ export class TerminalPane {
     this.attached = false;
     this.session?.dispose();
     this.observer.disconnect();
+    this.unwatchFonts?.();
     if (this.frame) this.body.ownerDocument.defaultView!.cancelAnimationFrame(this.frame);
     this.terminal.dispose();
     this.element.remove();
