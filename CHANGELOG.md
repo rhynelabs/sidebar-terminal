@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5 · 2026-09-24
+
+- Pass Cmd+Enter and Ctrl+Shift+Enter through to the running program; expand a pane from the command palette or with the tmux-style prefix instead.
+- Quote dropped Windows paths only when they contain spaces or other special characters.
+
 ## 0.1.4 · 2026-09-24
 
 - Drop notes, folders, files and text into a terminal to insert quoted paths instead of replacing the terminal with the note.
@@ -7,7 +12,6 @@
 - Keep shells and jobs alive when a terminal tab closes; reopen the tab with the ribbon icon or the new **Reopen closed terminal tab** command.
 - Save each pane's output when a tab closes or Obsidian quits and show it above the new shell after a restart, with a setting to turn this off.
 - Remove the start button that xterm's link layer covered.
-- Pass Cmd+Enter and Ctrl+Shift+Enter through to the running program; expand a pane from the command palette or with the tmux-style prefix instead.
 - Fit terminal rows to the visible area so the bottom row is never cut off, and re-measure glyphs once the bundled font has loaded.
 
 ## 0.1.3 · 2026-09-23
