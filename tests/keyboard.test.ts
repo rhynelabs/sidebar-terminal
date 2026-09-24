@@ -69,3 +69,41 @@ test('unknown prefix sequences preserve shell input, blur clears prefix', () => 
   assert.equal(keyboard.handle(key('c')), true);
   assert.ok(!log.includes('tab'));
 });
+
+test('Enter combinations reach the running program instead of toggling zoom', () => {
+  const calls: string[] = [];
+  const actions = {
+    split: () => calls.push('split'),
+    newTab: () => calls.push('newTab'),
+    close: () => calls.push('close'),
+    nextPane: () => calls.push('nextPane'),
+    nextTab: () => calls.push('nextTab'),
+    zoom: () => calls.push('zoom'),
+    clear: () => calls.push('clear'),
+    rename: () => calls.push('rename'),
+    send: () => calls.push('send'),
+    prefix: () => {},
+  };
+  for (const mac of [true, false]) {
+    const keyboard = new TerminalKeyboard(
+      actions,
+      mac,
+      () => true,
+      () => true,
+    );
+    const event = {
+      type: 'keydown',
+      key: 'Enter',
+      metaKey: mac,
+      ctrlKey: !mac,
+      shiftKey: !mac,
+      altKey: false,
+      isComposing: false,
+      repeat: false,
+      preventDefault() {},
+      stopPropagation() {},
+    } as unknown as KeyboardEvent;
+    assert.equal(keyboard.handle(event), true);
+  }
+  assert.deepEqual(calls, []);
+});

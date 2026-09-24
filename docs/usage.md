@@ -13,7 +13,6 @@ These keys apply while a terminal has focus.
 | Split down                          | `⌘ Shift D`   | `Ctrl Shift E`                  |
 | Close active pane                   | `⌘ W`         | `Ctrl Shift W`                  |
 | Clear history, keep the prompt line | `⌘ K`         | `Ctrl Shift K`                  |
-| Expand / restore active pane        | `⌘ Enter`     | `Ctrl Shift Enter`              |
 | Previous / next terminal tab        | `⌘ [` / `⌘ ]` | `Ctrl Shift [` / `Ctrl Shift ]` |
 | Copy / paste                        | `⌘ C` / `⌘ V` | `Ctrl Shift C` / `Ctrl Shift V` |
 
@@ -54,7 +53,7 @@ Open **Settings → Sidebar Terminal → Presets** to edit names and commands or
 
 A plain **New terminal tab** always opens your normal shell. A preset submits its command once the Unix shell's interactive editor is ready, so it runs with the same configuration as a command you type yourself. When the tool exits, you return to that shell without rerunning shell startup. Ctrl+C is passed to the running tool, which decides whether to cancel an operation or exit.
 
-The native tab menu groups tab actions, presets and split actions. Expanding a pane is available by keyboard shortcut and from the command palette.
+The native tab menu groups tab actions, presets and split actions. Expanding a pane is available from the command palette and with the tmux-style prefix, so Enter combinations always reach programs such as Claude Code or Codex.
 
 ## Appearance
 

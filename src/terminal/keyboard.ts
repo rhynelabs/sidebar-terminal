@@ -40,7 +40,6 @@ export class TerminalKeyboard {
       if (key === 't') action = this.actions.newTab;
       if (key === 'w') action = this.actions.close;
       if (key === 'k') action = this.actions.clear;
-      if (key === 'enter') action = this.actions.zoom;
       if (key === '[') action = () => this.actions.nextTab(-1);
       if (key === ']') action = () => this.actions.nextTab(1);
     }
