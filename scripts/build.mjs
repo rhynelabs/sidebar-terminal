@@ -1,5 +1,6 @@
 import { build, transform } from 'esbuild';
 import { mkdir, rm, readFile, writeFile, copyFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 
 const { name, version } = JSON.parse(await readFile('manifest.json', 'utf8'));
 const header = `/*!
@@ -61,9 +62,12 @@ for (const name of [
   '@xterm/addon-fit',
   '@xterm/addon-webgl',
   '@xterm/addon-web-links',
+  '@xterm/addon-serialize',
   '@fontsource/jetbrains-mono',
 ]) {
-  notices.push(`${name}\n\n${await readFile(`node_modules/${name}/LICENSE`, 'utf8')}`);
+  // Some xterm.js addon packages ship without the LICENSE file of their shared repository.
+  const file = existsSync(`node_modules/${name}/LICENSE`) ? name : '@xterm/xterm';
+  notices.push(`${name}\n\n${await readFile(`node_modules/${file}/LICENSE`, 'utf8')}`);
 }
 await writeFile('dist/THIRD-PARTY-NOTICES.txt', notices.join('\n\n'));
 const bundledNotices = `\n/*!\n${await readFile('LICENSE', 'utf8')}\n\n${notices.join('\n\n').replaceAll('*/', '* /')}\n*/\n`;

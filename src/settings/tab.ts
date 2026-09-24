@@ -32,6 +32,7 @@ export class TerminalSettingsTab extends PluginSettingTab {
     }
     this.plugin.settings = readSettings({ ...this.plugin.settings, [key]: value });
     await this.plugin.saveSettings();
+    if (key === 'restoreScrollback' && !value) await this.plugin.history.prune(new Set());
   }
 
   getSettingDefinitions(): SettingDefinitionItem[] {
@@ -98,6 +99,18 @@ export class TerminalSettingsTab extends PluginSettingTab {
             desc: 'Press Ctrl+B, then % or " to split, C for a new tab, O to switch pane, N or P to switch tab, Z to zoom, X to close. Ctrl+B twice passes through to tmux.',
             aliases: ['hotkeys', 'prefix key'],
             control: { type: 'toggle', key: 'tmuxKeys' },
+          },
+        ],
+      },
+      {
+        type: 'group',
+        heading: 'Sessions',
+        items: [
+          {
+            name: 'Restore output after restart',
+            desc: 'Save each pane’s terminal output in this vault’s plugin folder when a tab closes or Obsidian quits, and show it above the new shell. Turn off to keep terminal output out of the vault.',
+            aliases: ['scrollback', 'history', 'persist'],
+            control: { type: 'toggle', key: 'restoreScrollback' },
           },
         ],
       },

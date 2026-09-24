@@ -20,7 +20,7 @@ Enable Obsidian's CLI in Settings → General → Advanced, then run:
 npm run dev -- "/path/to/vault"
 ```
 
-The watcher checks types, lint and source line limits, builds, installs and reloads this plugin. It does not restart the vault. Each successful reload ends this plugin's terminal processes; saved layouts return with fresh shells without replaying preset commands. An optional second argument selects the Obsidian CLI executable.
+The watcher checks types, lint and source line limits, builds, installs and reloads this plugin. It does not restart the vault. Each successful reload ends this plugin's terminal processes; saved layouts return with their previous output above fresh shells, without replaying preset commands. An optional second argument selects the Obsidian CLI executable.
 
 ## Live checks
 
@@ -49,7 +49,7 @@ Each native Obsidian tab owns a split tree. Each pane owns its terminal renderer
 | `bridge/`                    | Unix PTY, Windows ConPTY and process cleanup              |
 | `scripts/`, `tests/`         | Builds, installation and checks                           |
 
-Closing a pane disposes its renderer and bridge; closing a tab disposes every pane. Restored layouts contain preset IDs and starting directories, never executable commands or terminal output. Restored panes wait for Start.
+Closing a pane disposes its renderer and bridge. Closing a tab detaches its panes into the plugin's session registry, where they keep running until the tab is reopened, the plugin unloads or the window closes. Restored layouts contain preset IDs and starting directories, never executable commands. Terminal output is saved separately in the plugin folder and replayed above a fresh shell. The only undocumented Obsidian API in use is `app.dragManager.draggable`, read during drops to identify dragged vault items; without it, only files from the operating system and text can be dropped.
 
 The three release files contain the Python bridge sources, fonts and dependency notices. Python itself must already be installed. Authored source files are limited to 300 lines; the build checks this alongside TypeScript and Obsidian lint rules.
 

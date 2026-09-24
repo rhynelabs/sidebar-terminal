@@ -40,3 +40,22 @@ test('layout round trip keeps profile and cwd, never commands', () => {
   const restored = restoreState(JSON.parse(JSON.stringify(input)));
   assert.deepEqual(restored.root, pane('a'));
 });
+
+test('layoutPaneIds collects terminal pane IDs from every part of a workspace layout', async () => {
+  const { layoutPaneIds } = await import('../src/layout/tree');
+  const pane = (id: string) => ({ kind: 'pane', id, title: 'Shell', profile: 'shell', cwd: '' });
+  const terminal = (id: string) => ({
+    type: 'leaf',
+    state: { type: 'sidebar-terminal-workspace', state: { version: 1, root: pane(id), active: id } },
+  });
+  const layout = {
+    main: {
+      type: 'split',
+      children: [{ type: 'tabs', children: [terminal('a'), { type: 'leaf', state: { type: 'markdown' } }] }],
+    },
+    right: { type: 'split', children: [terminal('b')] },
+    floating: null,
+  };
+  assert.deepEqual([...layoutPaneIds(layout, 'sidebar-terminal-workspace')].sort(), ['a', 'b']);
+  assert.equal(layoutPaneIds(undefined, 'sidebar-terminal-workspace').size, 0);
+});

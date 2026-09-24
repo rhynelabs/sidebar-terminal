@@ -1,11 +1,16 @@
-import { FileSystemAdapter, Plugin, TFolder, type WorkspaceLeaf } from 'obsidian';
+import { FileSystemAdapter, Plugin, TFolder, debounce, type WorkspaceLeaf } from 'obsidian';
 import { join } from 'node:path';
 import { DEFAULTS, readSettings, type Settings } from './settings/model';
 import { TerminalSettingsTab } from './settings/tab';
 import { TerminalView, VIEW_TYPE } from './view';
+import { SessionRegistry } from './terminal/registry';
+import { ScrollbackStore } from './terminal/history';
+import { layoutPaneIds } from './layout/tree';
 
 export default class SidebarTerminalPlugin extends Plugin {
   settings: Settings = structuredClone(DEFAULTS);
+  readonly sessions = new SessionRegistry();
+  history!: ScrollbackStore;
 
   get vaultPath(): string {
     const adapter = this.app.vault.adapter;
@@ -15,10 +20,12 @@ export default class SidebarTerminalPlugin extends Plugin {
 
   async onload(): Promise<void> {
     this.settings = readSettings(await this.loadData());
+    this.history = new ScrollbackStore(this.app, () => this.settings.restoreScrollback);
     this.registerView(VIEW_TYPE, (leaf) => new TerminalView(leaf, this));
     this.app.workspace.onLayoutReady(() => {
       for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE)) void leaf.loadIfDeferred();
     });
+    this.registerDomEvent(window, 'beforeunload', () => this.endSessions());
     this.addSettingTab(new TerminalSettingsTab(this));
     this.addRibbonIcon('terminal', 'Open terminal workspace', () => {
       void this.open();
@@ -35,6 +42,15 @@ export default class SidebarTerminalPlugin extends Plugin {
       name: 'New terminal tab',
       callback: () => {
         void this.open('shell');
+      },
+    });
+    this.addCommand({
+      id: 'reopen',
+      name: 'Reopen closed terminal tab',
+      checkCallback: (checking) => {
+        if (!this.sessions.hasClosed) return false;
+        if (!checking) void this.open(undefined, undefined, false, undefined, true);
+        return true;
       },
     });
     this.addCommand({
@@ -90,8 +106,14 @@ export default class SidebarTerminalPlugin extends Plugin {
     });
   }
 
-  async open(profile?: string, cwd?: string, editor = false, beside?: WorkspaceLeaf): Promise<TerminalView> {
-    let leaf = !profile && !editor ? this.app.workspace.getLeavesOfType(VIEW_TYPE)[0] : undefined;
+  async open(
+    profile?: string,
+    cwd?: string,
+    editor = false,
+    beside?: WorkspaceLeaf,
+    reopen = false,
+  ): Promise<TerminalView> {
+    let leaf = !profile && !editor && !reopen ? this.app.workspace.getLeavesOfType(VIEW_TYPE)[0] : undefined;
     if (!leaf) {
       if (beside) {
         this.app.workspace.setActiveLeaf(beside, { focus: false });
@@ -105,7 +127,12 @@ export default class SidebarTerminalPlugin extends Plugin {
     }
     await this.app.workspace.revealLeaf(leaf);
     const view = leaf.view as TerminalView;
-    if (!view.workspace.state.root) view.workspace.initialize(profile ?? 'shell', cwd);
+    if (!view.workspace.state.root) {
+      // Opening without a preset brings back the last closed tab and its live shells.
+      const closed = !profile && !cwd ? this.sessions.adopt() : null;
+      if (closed) view.workspace.restore(closed);
+      else view.workspace.initialize(profile ?? 'shell', cwd);
+    }
     this.app.workspace.setActiveLeaf(leaf, { focus: true });
     view.workspace.activePane?.focus();
     return view;
@@ -125,9 +152,26 @@ export default class SidebarTerminalPlugin extends Plugin {
     }
   }
 
+  /**
+   * Drop saved output that no pane in the saved layout can use. Runs after a terminal tab has
+   * restored its state, because Obsidian rebuilds plugin leaves only after onload returns.
+   */
+  readonly pruneHistory = debounce(
+    () => {
+      const keep = layoutPaneIds(this.app.workspace.getLayout(), VIEW_TYPE);
+      for (const id of this.sessions.panes.keys()) keep.add(id);
+      void this.history.prune(keep);
+    },
+    2000,
+    true,
+  );
+
+  /** Save output first; shells cannot survive the plugin or window going away. */
+  endSessions(): void {
+    this.sessions.disposeAll((pane) => this.history.save(pane.spec.id, pane.snapshot()));
+  }
+
   onunload(): void {
-    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE)) {
-      if (leaf.view instanceof TerminalView) leaf.view.workspace.dispose();
-    }
+    this.endSessions();
   }
 }

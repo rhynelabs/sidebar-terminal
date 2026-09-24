@@ -9,14 +9,19 @@ import {
   type PaneSpec,
   type WorkspaceState,
 } from './tree';
-import { TerminalPane } from '../terminal/pane';
+import { TerminalPane, type PaneHost } from '../terminal/pane';
 import type { TerminalActions } from '../terminal/keyboard';
+import type { SessionRegistry } from '../terminal/registry';
+import type { ScrollbackStore } from '../terminal/history';
 import type { Settings } from '../settings/model';
 
 export interface WorkspaceHost {
   doc: Document;
   cwd: string;
   settings: () => Settings;
+  registry: SessionRegistry;
+  history: ScrollbackStore;
+  dragged: () => unknown;
   render: () => void;
   save: () => void;
   menu: (event: MouseEvent) => void;
@@ -26,7 +31,7 @@ export interface WorkspaceHost {
   closeTab: () => void;
 }
 
-/** One native Obsidian tab owns one split tree. No nested tab system. */
+/** One native Obsidian tab owns one split tree. Panes are borrowed from the shared registry. */
 export class TerminalWorkspace {
   state: WorkspaceState = emptyState();
   readonly terminals = new Map<string, TerminalPane>();
@@ -57,29 +62,59 @@ export class TerminalWorkspace {
     return { kind: 'pane', id: id(), title: name, profile, cwd };
   }
 
+  private paneHost(spec: PaneSpec): PaneHost {
+    return {
+      settings: this.host.settings,
+      actions: this.actions,
+      activate: () => this.activate(spec.id),
+      menu: this.host.menu,
+      dragged: this.host.dragged,
+      vaultPath: this.host.cwd,
+    };
+  }
+
   ensurePane(spec: PaneSpec): TerminalPane {
-    let pane = this.terminals.get(spec.id);
-    if (!pane) {
-      pane = new TerminalPane(this.host.doc, spec, {
-        settings: this.host.settings,
-        actions: this.actions,
-        activate: () => this.activate(spec.id),
-        menu: this.host.menu,
-      });
-      this.terminals.set(spec.id, pane);
+    const { registry } = this.host;
+    let pane = registry.panes.get(spec.id);
+    if (pane && pane.element.ownerDocument !== this.host.doc) {
+      registry.dispose(spec.id);
+      pane = undefined;
     }
+    if (!pane) {
+      pane = new TerminalPane(this.host.doc, spec, this.paneHost(spec));
+      registry.panes.set(spec.id, pane);
+    }
+    pane.attach(spec, this.paneHost(spec));
+    this.terminals.set(spec.id, pane);
     return pane;
   }
 
+  /** Reuse live shells for known pane IDs; start the rest with their saved output. */
   restore(value: unknown): void {
-    this.dispose();
-    this.state = restoreState(value);
+    const next = restoreState(value);
+    const keep = new Set(next.root ? panes(next.root).map((spec) => spec.id) : []);
+    for (const paneId of this.terminals.keys()) if (!keep.has(paneId)) this.forget(paneId);
+    this.terminals.clear();
+    if (next.root)
+      for (const spec of panes(next.root)) {
+        // A duplicated tab must not steal the pane that another tab is showing.
+        if (this.host.registry.panes.get(spec.id)?.attached) {
+          const previous = spec.id;
+          spec.id = id();
+          if (next.active === previous) next.active = spec.id;
+        }
+      }
+    this.state = next;
     this.zoomed = false;
     this.host.render();
-    // Restore usable shells, never replay a preset command or steal focus from another tab.
-    if (this.state.root)
-      for (const spec of panes(this.state.root))
-        this.ensurePane(spec).start({ runProfile: false, focus: false });
+    if (next.root)
+      for (const spec of panes(next.root)) {
+        const pane = this.ensurePane(spec);
+        if (pane.running) continue;
+        void this.host.history
+          .load(spec.id)
+          .then((history) => pane.start({ runProfile: false, focus: false, history }));
+      }
   }
 
   newTab(profile = 'shell', cwd = this.host.cwd): void {
@@ -129,12 +164,18 @@ export class TerminalWorkspace {
     this.activePane?.focus();
   }
 
+  private forget(paneId: string): void {
+    this.host.registry.dispose(paneId);
+    this.terminals.delete(paneId);
+    void this.host.history.remove(paneId);
+  }
+
   closePane(): void {
     if (!this.state.root) return;
     const next = removePane(this.state.root, this.state.active);
-    this.terminals.get(this.state.active)?.dispose();
-    this.terminals.delete(this.state.active);
+    this.forget(this.state.active);
     if (!next) {
+      this.state = emptyState();
       this.host.closeTab();
       return;
     }
@@ -161,8 +202,20 @@ export class TerminalWorkspace {
     this.host.render();
     this.host.save();
   }
-  dispose(): void {
-    for (const pane of this.terminals.values()) pane.dispose();
+
+  /** The tab is closing: keep every shell alive so the layout can be reopened. */
+  detach(): void {
+    for (const pane of this.terminals.values()) {
+      this.host.history.save(pane.spec.id, pane.snapshot());
+      pane.detach();
+    }
+    this.host.registry.stash(this.state);
     this.terminals.clear();
+  }
+
+  /** End every shell in this tab. */
+  dispose(): void {
+    for (const paneId of [...this.terminals.keys()]) this.forget(paneId);
+    this.state = emptyState();
   }
 }

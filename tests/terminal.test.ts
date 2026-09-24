@@ -38,3 +38,25 @@ test('clear retains prompt and unfinished input instead of erasing the current l
     terminal.dispose();
   }
 });
+
+test('serialized output replays into a new terminal with colors and the cursor after the prompt', async () => {
+  const { SerializeAddon } = await import('@xterm/addon-serialize');
+  const source = new Terminal({ cols: 40, rows: 10, allowProposedApi: true });
+  const target = new Terminal({ cols: 40, rows: 10, allowProposedApi: true });
+  try {
+    const serializer = new SerializeAddon();
+    source.loadAddon(serializer);
+    await write(source, 'one\r\n\x1b[31mtwo\x1b[0m\r\n\x1b[?1049h(alternate screen)\x1b[?1049l➜ ');
+    await write(target, serializer.serialize({ excludeModes: true, excludeAltBuffer: true }));
+    const line = (index: number) => target.buffer.active.getLine(index)!.translateToString(true);
+    assert.equal(line(0), 'one');
+    assert.equal(line(1), 'two');
+    assert.equal(line(2), '➜ ');
+    assert.equal(target.buffer.active.getLine(1)!.getCell(0)!.getFgColor(), 1);
+    assert.equal(target.buffer.active.cursorY, 2);
+    assert.equal(target.buffer.active.cursorX, 2);
+  } finally {
+    source.dispose();
+    target.dispose();
+  }
+});

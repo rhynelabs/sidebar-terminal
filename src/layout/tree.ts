@@ -104,3 +104,15 @@ export function restoreState(value: unknown): WorkspaceState {
     return emptyState();
   }
 }
+
+/** Pane IDs of every terminal view in a saved Obsidian workspace layout, whatever its load state. */
+export function layoutPaneIds(layout: unknown, viewType: string, ids = new Set<string>()): Set<string> {
+  if (!layout || typeof layout !== 'object') return ids;
+  const node = layout as { type?: string; state?: { type?: string; state?: unknown } };
+  if (node.type === 'leaf' && node.state?.type === viewType) {
+    const root = restoreState(node.state.state).root;
+    if (root) for (const spec of panes(root)) ids.add(spec.id);
+  }
+  for (const value of Object.values(node)) layoutPaneIds(value, viewType, ids);
+  return ids;
+}

@@ -114,12 +114,13 @@ body.ot-resizing * {
 .ot-pane-status:empty {
   display: none;
 }
-.ot-pane > button.ot-icon {
+.ot-pane.is-drop-target::before {
+  content: '';
   position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 7px;
-  z-index: 1;
+  inset: 0;
+  z-index: 25;
+  border: 2px dashed var(--interactive-accent);
+  pointer-events: none;
 }
 .ot-start {
   align-self: center;

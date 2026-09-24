@@ -13,6 +13,7 @@ export interface Settings {
   scrollback: number;
   shortcuts: boolean;
   tmuxKeys: boolean;
+  restoreScrollback: boolean;
   profiles: Profile[];
 }
 
@@ -26,6 +27,7 @@ export const DEFAULTS: Settings = {
   cursorBlink: false,
   shortcuts: true,
   tmuxKeys: true,
+  restoreScrollback: true,
   profiles: [
     { id: 'shell', name: 'Shell', command: '' },
     { id: 'claude', name: 'Claude', command: 'claude' },
@@ -55,6 +57,7 @@ export function readSettings(value: unknown): Settings {
       : 10000,
     shortcuts: data.shortcuts !== false,
     tmuxKeys: data.tmuxKeys !== false,
+    restoreScrollback: data.restoreScrollback !== false,
     profiles: [...unique.values()],
   };
 }

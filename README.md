@@ -21,6 +21,8 @@ Need a script, a Git command or an ordinary shell? Those work here too.
 - **Presets.** Launch an installed CLI in a new tab. When it exits, you are back in the same shell.
 - **Split with a shortcut.** `⌘ D` splits right; `⌘ Shift D` splits down. Resize with a drag, or use the optional tmux-style prefix. [All shortcuts →](docs/usage.md#keyboard-shortcuts)
 - **Theme-aware.** Background, text and selection follow your Obsidian theme. Explicit RGB colors from TUI programs are shown unchanged.
+- **Drop notes as paths.** Drag a note, folder or file from the explorer or Finder into a terminal to insert its quoted path, ready for an agent or a command.
+- **Sessions that stay.** Closing a terminal tab keeps its shells and jobs; reopen it and continue. An ended shell restarts under its output, and the output returns after a restart.
 
 Rendering uses xterm.js with bundled JetBrains Mono.
 
@@ -60,8 +62,9 @@ Open a terminal with the ribbon icon or the **Open terminal workspace** command.
 
 ## Good to know
 
-- **Sessions.** Closing a pane or tab ends its shell and the processes it owns. Quitting Obsidian or reloading the plugin ends all sessions.
-- **Restored layouts.** Tabs, splits, names and starting directories come back after a restart. Each pane starts a fresh shell automatically; previous commands and preset commands are not replayed.
+- **Sessions.** Closing a tab keeps its shells and jobs running until you reopen it with the ribbon icon or **Reopen closed terminal tab**. **Close pane and its processes** ends a shell. Quitting Obsidian or reloading the plugin ends all sessions.
+- **Restored layouts.** Tabs, splits, names, starting directories and previous output come back after a restart. Each pane starts a fresh shell under its previous output; commands and preset commands are not replayed.
+- **Saved output.** When a tab closes or Obsidian quits, each pane's output is written to `.obsidian/plugins/sidebar-terminal/scrollback/` in the vault. Turn off **Restore output after restart** in settings to keep terminal output out of the vault; existing files are deleted.
 - **Working directories.** New splits open in the pane's configured starting directory, not wherever you last moved with `cd`.
 - **System access.** Shells, their configuration and the files your programs touch can live outside the vault. Programs run with your normal user permissions.
 - **Clipboard.** The plugin reads clipboard text only when you invoke Paste and writes selected text only when you invoke Copy. It does not monitor clipboard changes.

@@ -40,6 +40,9 @@ export class TerminalView extends ItemView {
       doc,
       cwd: plugin.vaultPath,
       settings: () => plugin.settings,
+      registry: plugin.sessions,
+      history: plugin.history,
+      dragged: () => (this.app as unknown as { dragManager?: { draggable: unknown } }).dragManager?.draggable,
       render: () => this.render(),
       save: () => this.app.workspace.requestSaveLayout(),
       rename: () => this.rename(),
@@ -74,6 +77,7 @@ export class TerminalView extends ItemView {
   async setState(state: unknown, result: ViewStateResult): Promise<void> {
     this.workspace.restore(state);
     await super.setState(state, result);
+    if (this.workspace.state.root) this.plugin.pruneHistory();
   }
 
   async onOpen(): Promise<void> {
@@ -91,8 +95,6 @@ export class TerminalView extends ItemView {
         if (leaf === this.leaf) this.workspace.activePane?.focus();
       }),
     );
-    const doc = this.contentEl.ownerDocument;
-    this.registerDomEvent(doc.defaultView!, 'beforeunload', () => this.workspace.dispose());
     this.render();
   }
 
@@ -174,7 +176,7 @@ export class TerminalView extends ItemView {
   async onClose(): Promise<void> {
     this.visible = false;
     for (const cleanup of this.renderCleanups.splice(0)) cleanup();
-    this.workspace.dispose();
+    this.workspace.detach();
     this.contentEl.empty();
   }
 }

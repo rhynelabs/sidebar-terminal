@@ -21,6 +21,16 @@ These keys apply while a terminal has focus.
 
 Drag a divider to resize panes, or double-click it to balance the layout.
 
+## Drag and drop
+
+Drop a note, folder or a multi-selection from the file explorer into a terminal to insert its absolute path, quoted for your shell and followed by a space. Files from Finder or Explorer and dragged text work the same way. Dragging a tab header still moves the tab.
+
+## Sessions
+
+When a shell ends, its output stays and a new shell starts underneath a dimmed divider. If a shell keeps ending within seconds, the pane waits until you press a key. Closing a terminal tab keeps its shells and jobs; the ribbon icon or **Reopen closed terminal tab** brings the tab back with its output. **Close pane and its processes** ends a shell for good.
+
+After Obsidian restarts or the plugin reloads, each pane shows its previous output above a fresh shell. The output is saved in `.obsidian/plugins/sidebar-terminal/scrollback/` when a tab closes or Obsidian quits, without alternate-screen programs such as editors or agents. **Settings → Sessions → Restore output after restart** turns this off and deletes the saved files.
+
 ### Tmux-style prefix
 
 Press `Ctrl B`, release, then:
@@ -48,7 +58,7 @@ The native tab menu groups tab actions, presets and split actions. Expanding a p
 
 ## Appearance
 
-**Appearance** controls font, size, cursor and retained history. The default font is the bundled JetBrains Mono. Leave the font field blank to use it, or enter the name of a locally installed font family.
+**Appearance** controls font, size, cursor and retained history in memory. The default font is the bundled JetBrains Mono. Leave the font field blank to use it, or enter the name of a locally installed font family.
 
 The terminal is rendered with xterm.js, using GPU rendering when available and a built-in fallback. Background, default text and selection colors follow your Obsidian theme and update with light and dark mode. The standard 16-color palette is adapted from Ghostty's defaults with Obsidian's blue. Explicit 256-color and RGB output from applications is shown unchanged.
 

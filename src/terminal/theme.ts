@@ -1,4 +1,5 @@
-import type { ITheme } from '@xterm/xterm';
+import type { ITerminalOptions, ITheme } from '@xterm/xterm';
+import type { Settings } from '../settings/model';
 import { element as createElement } from '../ui/elements';
 
 /** Adapt the default surface to Obsidian; preserve the terminal ANSI palette. */
@@ -51,4 +52,23 @@ export function terminalTheme(element: HTMLElement): ITheme {
   };
   probe.remove();
   return theme;
+}
+
+export function terminalOptions(doc: Document, settings: Settings, host: HTMLElement): ITerminalOptions {
+  return {
+    fontSize: settings.fontSize,
+    lineHeight: 1,
+    letterSpacing: 1 / (doc.defaultView?.devicePixelRatio || 1),
+    fontWeight: 400,
+    fontWeightBold: 700,
+    minimumContrastRatio: 1,
+    drawBoldTextInBrightColors: false,
+    customGlyphs: true,
+    cursorWidth: 1,
+    fontFamily: settings.fontFamily,
+    cursorBlink: settings.cursorBlink,
+    cursorStyle: settings.cursorStyle,
+    scrollback: settings.scrollback,
+    theme: terminalTheme(host),
+  };
 }
